@@ -1,5 +1,6 @@
 package org.altchain.ConfidenceChains.Simulation.BlockChain;
 
+import java.io.OutputStream;
 import java.util.LinkedList;
 
 import org.altchain.ConfidenceChains.Simulation.Block.Block;
@@ -24,6 +25,12 @@ public class BlockChain {
 	double computeConfidenceScore( WeightedIdentitySet weights ) {
 		
 		return 0.0;
+		
+	}
+	
+	void printChain( ){
+		
+		
 		
 	}
 	
