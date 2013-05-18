@@ -1,10 +1,15 @@
 package org.altchain.ConfidenceChains.Simulation.BlockChain;
 
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.altchain.ConfidenceChains.Simulation.Block.Block;
+import org.altchain.ConfidenceChains.Simulation.Block.SignedBlock;
+import org.altchain.ConfidenceChains.Simulation.Identity.Identity;
+import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentitySet;
 
 public class BlockChain {
@@ -23,15 +28,42 @@ public class BlockChain {
 		chain.addLast(b);
 	}
 	
-	double computeConfidenceScore( WeightedIdentitySet weights ) {
+	double computeConfidenceScore(  ) {
+
+		double confidenceScore = 0;
 		
-		// first make an iterator and advance to end of list
-		ListIterator itr = chain.listIterator();  
-		while(itr.hasNext()) itr.next();
+		// Generate an iterator. Start at end of list
+		ListIterator li = chain.listIterator(chain.size());
 		
-		//
+		// now create a tally system for all the identities in the system
+		HashSet<WeightedIdentity> IDTally = new HashSet<WeightedIdentity>();
 		
-		return 0.0;
+		// Iterate all blocks in reverse.
+		while(li.hasPrevious()) {
+			
+		  double blockScore = 0;
+			
+		  SignedBlock b = (SignedBlock)li.previous();
+		  
+		  // for each block, tally the identity
+		  // this assumes the block was signed by a weighted identity
+		  // if not will throw an exception
+		  IDTally.add((WeightedIdentity)b.signature);
+		  
+		  // now simply add all the compounded weights of the identities in the tally
+		  Iterator IdIter = IDTally.iterator();
+		  while (IdIter.hasNext()) {
+			WeightedIdentity id = (WeightedIdentity) IdIter.next();
+			blockScore += id.weight;
+		  }
+		  
+		  System.out.println("blockscore: "+blockScore);
+		  
+		  confidenceScore += blockScore;
+		  
+		}
+		
+		return confidenceScore;
 		
 	}
 	
@@ -46,6 +78,8 @@ public class BlockChain {
 	      b.printBlock();
 	      System.out.print("|");
 	    }
+		
+		System.out.println("");
 	 
 		
 	}

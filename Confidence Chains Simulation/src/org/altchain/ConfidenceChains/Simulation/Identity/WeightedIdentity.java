@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public class WeightedIdentity extends Identity {
 	
+	public static HashMap<UUID,Double> weightTable = new HashMap<UUID,Double>();
 
 	WeightedIdentity( String name, UUID id, double weight ) {
 		
@@ -13,6 +14,9 @@ public class WeightedIdentity extends Identity {
 		// TODO Auto-generated constructor stub
 		
 		this.weight = weight;
+		
+		weightTable.put(id, weight);
+		nameTable.put(id, name);
 		
 	}
 	
@@ -23,11 +27,15 @@ public class WeightedIdentity extends Identity {
 		
 		this.weight = weight;
 		
+		weightTable.put(id, weight);
+		nameTable.put(id, name);
+
+		
 	}
 	
 	
 
-	double weight;
+	public double weight;
 	
 	/**
 	 * @param args

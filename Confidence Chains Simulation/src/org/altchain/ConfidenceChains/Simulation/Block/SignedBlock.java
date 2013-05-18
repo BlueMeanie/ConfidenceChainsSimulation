@@ -10,7 +10,7 @@ import org.altchain.ConfidenceChains.Simulation.Identity.Identity;
 public class SignedBlock extends Block {
 	
 	
-	Identity signature;
+	public Identity signature;
 
 	SignedBlock(UUID id, Block previous, Identity signature ) {
 		
