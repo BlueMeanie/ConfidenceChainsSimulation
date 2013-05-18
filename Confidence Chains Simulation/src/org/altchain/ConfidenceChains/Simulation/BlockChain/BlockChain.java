@@ -93,7 +93,7 @@ public class BlockChain {
 	
 	public void printChain( String prefixMessage ){
 		
-		System.out.print( prefixMessage + ":");
+		System.out.print( prefixMessage + "#" + this.computeConfidenceScore() + ":");
 		
 		this.printChain();
 		
