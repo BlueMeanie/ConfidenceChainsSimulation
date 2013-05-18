@@ -1,15 +1,36 @@
 package org.altchain.ConfidenceChains.Simulation.Identity;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Identity {
 	
 
-	public static HashMap<Integer,String> nameTable;
+	public static HashMap<UUID,String> nameTable = new HashMap<UUID,String>();
 
-	String name;
+	public String name;
 	
-	Integer id;
+	UUID id;
+	
+	Identity( String name, UUID id ){
+		
+		this.name = name;
+		this.id = id;
+		
+		nameTable.put(this.id, this.name);
+		
+	}
+	
+	Identity( String name ){
+		
+		this.name = name;
+		this.id = UUID.randomUUID();
+		
+		nameTable.put(this.id, this.name);
+				
+	}
+	
+	
 	
 	/**
 	 * @param args

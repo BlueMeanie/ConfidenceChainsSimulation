@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class WeightedIdentitySet {
 
 	// to get by ID
-	public HashMap<Integer,WeightedIdentity> weightTable;
+	public HashMap<Integer,WeightedIdentity> weightTable = new HashMap<Integer,WeightedIdentity>();
 	
 
 	/**
