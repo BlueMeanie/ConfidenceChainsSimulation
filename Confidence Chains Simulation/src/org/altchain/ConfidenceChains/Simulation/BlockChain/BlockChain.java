@@ -20,14 +20,14 @@ public class BlockChain {
 	 * @return 
 	 */
 	
-	BlockChain( Block genesisBlock ){	
+	public BlockChain( Block genesisBlock ){	
 		addBlock(genesisBlock);	
 	}
 	
 	//copy constructor
 	// note: does not copy the blocks themselves, just the list
 	
-	BlockChain( BlockChain orig ){
+	public BlockChain( BlockChain orig ){
 		// make a complete copy
 		this.chain = new LinkedList<Block>(orig.chain);
 	}
@@ -38,7 +38,7 @@ public class BlockChain {
 	
 	
 	
-	double computeConfidenceScore(  ) {
+	public double computeConfidenceScore(  ) {
 
 		double confidenceScore = 0;
 		
@@ -78,7 +78,7 @@ public class BlockChain {
 		
 	}
 	
-	void printChain( ){
+	public void printChain( ){
 			
 		ListIterator itr = chain.listIterator();
 		while(itr.hasNext())
@@ -91,7 +91,7 @@ public class BlockChain {
 		
 	}
 	
-	void printChain( String prefixMessage ){
+	public void printChain( String prefixMessage ){
 		
 		System.out.print( prefixMessage + ":");
 		
