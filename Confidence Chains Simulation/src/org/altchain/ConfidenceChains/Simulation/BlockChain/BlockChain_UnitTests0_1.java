@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CreateSampleBlockChain_01 {
+public class BlockChain_UnitTests0_1 {
 	
 	BlockChain testChain;
 	WeightedIdentity issuerID = new WeightedIdentity("issuer", 100.00);
