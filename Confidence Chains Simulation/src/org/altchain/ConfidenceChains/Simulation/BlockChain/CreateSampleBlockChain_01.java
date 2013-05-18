@@ -16,6 +16,9 @@ public class CreateSampleBlockChain_01 {
 	WeightedIdentity issuerID = new WeightedIdentity("issuer", 100.00);
 	WeightedIdentity ctrptyID1 = new WeightedIdentity("counterparty1", 20.00);
 	WeightedIdentity ctrptyID2 = new WeightedIdentity("counterparty2", 20.00);
+	WeightedIdentity ctrptyID3 = new WeightedIdentity("counterparty2", 10.00);
+	WeightedIdentity ctrptyID4 = new WeightedIdentity("counterparty2", 10.00);
+
 
 	
 	
@@ -37,37 +40,44 @@ public class CreateSampleBlockChain_01 {
 
 	@Test
 	public void testBlockChain() {
-		
-		testChain.printChain();
-		
-		assertTrue("testing that Weightmap has 3 elements", WeightedIdentity.weightTable.size() == 3 );
-	
+		assertTrue("testing that Weightmap has 5 elements", WeightedIdentity.weightTable.size() == 5 );
 	}
 
 	@Test
 	public void testAddBlock() {
-		//fail("Not yet implemented");
+		
+		// create a copy of the chain
+		BlockChain newChain = new BlockChain(testChain);
+	
+		// add a block
+		newChain.addBlock( new SignedBlock(null, ctrptyID1) );
+		
+		// test to see that the length of new is 1 more than length of first
+		assertTrue("Chain copy with block added has 1 more length than original", 
+				testChain.chain.size() == newChain.chain.size() -1
+		);
+
+		
 	}
 
 	@Test
 	public void testComputeConfidenceScore() {
-		System.out.println( "SCORE: " + testChain.computeConfidenceScore() );
+		double Score = testChain.computeConfidenceScore();
+		assertTrue("testing that first testChain has a Conf of 200.0", Score == 200.0 );
 	}
 	
 	@Test
 	public void testChain2() {
-		
 		testChain.addBlock( new SignedBlock(null, ctrptyID1 ) );
 		testChain.addBlock( new SignedBlock(null, ctrptyID2 ) );
 		testChain.addBlock( new SignedBlock(null, issuerID ) );
-
-		System.out.println( "SCORE: " + testChain.computeConfidenceScore() );
-		
+		double Score = testChain.computeConfidenceScore();
+		assertTrue("testing that second testChain has a Conf of 780.0", Score == 780.0 );
 	}
 
 	@Test
 	public void testPrintChain() {
-		//fail("Not yet implemented");
+		testChain.printChain("testPrintChain()");
 	}
 
 }

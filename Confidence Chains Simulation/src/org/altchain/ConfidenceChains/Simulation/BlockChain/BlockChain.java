@@ -14,7 +14,7 @@ import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentitySet;
 
 public class BlockChain {
 
-	LinkedList<Block> chain = new LinkedList<Block>();
+	public LinkedList<Block> chain = new LinkedList<Block>();
 	/**
 	 * @param args
 	 * @return 
@@ -24,9 +24,19 @@ public class BlockChain {
 		addBlock(genesisBlock);	
 	}
 	
+	//copy constructor
+	// note: does not copy the blocks themselves, just the list
+	
+	BlockChain( BlockChain orig ){
+		// make a complete copy
+		this.chain = new LinkedList<Block>(orig.chain);
+	}
+	
 	void addBlock( Block b ){
 		chain.addLast(b);
 	}
+	
+	
 	
 	double computeConfidenceScore(  ) {
 
@@ -57,7 +67,8 @@ public class BlockChain {
 			blockScore += id.weight;
 		  }
 		  
-		  System.out.println("blockscore: "+blockScore);
+		  // for debug pursposes
+		  //System.out.println("blockscore: "+blockScore);
 		  
 		  confidenceScore += blockScore;
 		  
@@ -68,19 +79,25 @@ public class BlockChain {
 	}
 	
 	void printChain( ){
-		
-		System.out.print("CHAIN:");
-		
+			
 		ListIterator itr = chain.listIterator();
 		while(itr.hasNext())
 	    {
 	      Block b = (Block) itr.next();
 	      b.printBlock();
-	      System.out.print("|");
+	      if (itr.hasNext()) System.out.print("|");
 	    }
 		
+		
+	}
+	
+	void printChain( String prefixMessage ){
+		
+		System.out.print( prefixMessage + ":");
+		
+		this.printChain();
+		
 		System.out.println("");
-	 
 		
 	}
 	
