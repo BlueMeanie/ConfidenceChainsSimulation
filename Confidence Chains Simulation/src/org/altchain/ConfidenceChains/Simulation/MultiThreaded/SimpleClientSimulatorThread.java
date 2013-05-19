@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.altchain.ConfidenceChains.Simulation.Block.SignedBlock;
 import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 
-public class ClientSimulatorThread extends Thread {
+public class SimpleClientSimulatorThread extends Thread {
 	
 	public static class P2PBroadcast extends Observable {
 		
@@ -46,7 +46,7 @@ public class ClientSimulatorThread extends Thread {
 	WeightedIdentity identity;
 	
 	// the constructor supplies the identity
-	ClientSimulatorThread( WeightedIdentity identity ){
+	SimpleClientSimulatorThread( WeightedIdentity identity ){
 		this.identity = identity;
 	}
 	
@@ -92,9 +92,9 @@ public class ClientSimulatorThread extends Thread {
 		WeightedIdentity i2 = new WeightedIdentity("i2",10.00);
 		WeightedIdentity i3 = new WeightedIdentity("i3",10.00);
 		
-		ClientSimulatorThread thread1 = new ClientSimulatorThread(i1);
-		ClientSimulatorThread thread2 = new ClientSimulatorThread(i2);
-		ClientSimulatorThread thread3 = new ClientSimulatorThread(i3);
+		SimpleClientSimulatorThread thread1 = new SimpleClientSimulatorThread(i1);
+		SimpleClientSimulatorThread thread2 = new SimpleClientSimulatorThread(i2);
+		SimpleClientSimulatorThread thread3 = new SimpleClientSimulatorThread(i3);
 
 		System.out.println("starting thread 1...");
 		thread1.start();
