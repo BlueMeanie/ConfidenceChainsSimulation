@@ -35,12 +35,19 @@ public class BasicSimulator {
 		WeightedIdentity t1 = new WeightedIdentity("T1",10.00);
 		WeightedIdentity t2 = new WeightedIdentity("T2",10.00);
 		WeightedIdentity t3 = new WeightedIdentity("T3",10.00);
+		WeightedIdentity t4 = new WeightedIdentity("T4",10.00);
+		WeightedIdentity t5 = new WeightedIdentity("T5",10.00);
+
+		
 		
 		// now add them to our identity set
 		
 		identities.IdentitySet.add(t1);
 		identities.IdentitySet.add(t2);
 		identities.IdentitySet.add(t3);
+		identities.IdentitySet.add(t4);
+		identities.IdentitySet.add(t5);
+
 		
 		// now set up the block chain, genesis block signed by t1
 		

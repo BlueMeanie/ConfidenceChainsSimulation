@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class Block {
 	
-	UUID id;
+	public UUID id;
 	
 	Block previous;
 	
