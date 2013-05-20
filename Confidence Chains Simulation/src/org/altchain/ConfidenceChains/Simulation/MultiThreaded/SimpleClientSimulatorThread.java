@@ -13,7 +13,7 @@ public class SimpleClientSimulatorThread extends Thread {
 	
 	public static class P2PBroadcast extends Observable {
 		
-		// a stack/deque of blocks
+		// a threadsafe deque of blocks
 		LinkedBlockingDeque<SignedBlock> blocks = new LinkedBlockingDeque<SignedBlock>();
 		
 		public boolean broadcastBlock( SignedBlock block ){
@@ -27,13 +27,13 @@ public class SimpleClientSimulatorThread extends Thread {
 	
 	public static P2PBroadcast broadcaster = new P2PBroadcast();
 	
+	int counter = 0;
+	
 	public class PeerNode implements Observer {
-	    
+		    
 	    public void update(Observable obj, Object arg) {
 	        if (arg instanceof SignedBlock) {
-	            // here goes the code to handle the block broadcast
-	        	SignedBlock sb = (SignedBlock)arg;
-	        	System.out.println( identity.name + " got block! "+sb.id);
+	            handleRecieveBlock(arg);
 	        }
 	    }
 	}
@@ -52,8 +52,12 @@ public class SimpleClientSimulatorThread extends Thread {
 	
 	// random number generator
 	Random rand = new Random( System.currentTimeMillis() );
+
+	
+////////////////////////////////////////////////////////
 	
 	// main runner thread
+	
 	public void run () {
 		
 		System.out.println("starting "+identity.name+" thread...");
@@ -84,6 +88,16 @@ public class SimpleClientSimulatorThread extends Thread {
 	      
 	}
 	
+	// here is the function called when the Simulator Thread receives a block broadcast
+	
+	private void handleRecieveBlock(Object arg) {
+		// here goes the code to handle the block broadcast
+		SignedBlock sb = (SignedBlock)arg;
+		System.out.println( counter++ + " " + identity.name + " got block! "+sb.id);
+	}
+	
+	
+
 	public static void main(String[] args) {
 		
 		// now create a bunch of clientSimulator threads

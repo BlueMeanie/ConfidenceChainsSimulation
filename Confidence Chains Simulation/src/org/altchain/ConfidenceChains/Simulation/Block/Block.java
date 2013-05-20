@@ -2,14 +2,15 @@ package org.altchain.ConfidenceChains.Simulation.Block;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Block {
 	
 	public UUID id;
 	
-	Block previous;
+	public Block previous;
 	
-	public static HashMap<UUID, Block> uidLookup = new HashMap<UUID,Block>();
+	public static ConcurrentHashMap<UUID, Block> uidLookup = new ConcurrentHashMap<UUID,Block>();
 	
 	public Block( UUID id, Block previous ){
 		this.id = id;

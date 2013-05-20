@@ -2,11 +2,12 @@ package org.altchain.ConfidenceChains.Simulation.Identity;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class WeightedIdentity extends Identity {
 	
-	public static HashMap<UUID,Double> weightTable = new HashMap<UUID,Double>();
+	public static ConcurrentHashMap<UUID,Double> weightTable = new ConcurrentHashMap<UUID,Double>();
 
 	WeightedIdentity( String name, UUID id, double weight ) {
 		

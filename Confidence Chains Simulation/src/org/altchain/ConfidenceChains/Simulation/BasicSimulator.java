@@ -30,7 +30,7 @@ public class BasicSimulator {
 		
 		WeightedIdentitySet identities = new WeightedIdentitySet();
 		
-		// a simple TRIUMVIRATE structure ie. 3 equally powerful identities
+		// a simple TRUSTEE structure ie. 5 equally powerful identities
 		
 		WeightedIdentity t1 = new WeightedIdentity("T1",10.00);
 		WeightedIdentity t2 = new WeightedIdentity("T2",10.00);

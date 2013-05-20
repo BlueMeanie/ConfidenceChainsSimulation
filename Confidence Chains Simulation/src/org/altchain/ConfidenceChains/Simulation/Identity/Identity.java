@@ -2,11 +2,12 @@ package org.altchain.ConfidenceChains.Simulation.Identity;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Identity {
 	
 
-	public static HashMap<UUID,String> nameTable = new HashMap<UUID,String>();
+	public static ConcurrentHashMap<UUID,String> nameTable = new ConcurrentHashMap<UUID,String>();
 
 	public String name;
 	
