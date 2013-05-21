@@ -34,6 +34,20 @@ public class WeightedIdentity extends Identity {
 		
 	}
 	
+	public WeightedIdentity( String name, double weight, String color ) {
+	
+		super(name );
+		// TODO Auto-generated constructor stub
+		
+		this.weight = weight;
+		this.color = color;
+		
+		weightTable.put(id, weight);
+		nameTable.put(id, name);
+		
+	}
+
+	
 	
 
 	public double weight;

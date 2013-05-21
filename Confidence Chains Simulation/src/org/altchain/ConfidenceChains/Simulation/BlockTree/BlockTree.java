@@ -1,8 +1,14 @@
 package org.altchain.ConfidenceChains.Simulation.BlockTree;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -198,19 +204,29 @@ public class BlockTree {
 		
 	}
 
-	void printDOT( LinkedList<String> DOTData, String pathname ){
+	void printDOT( String pathname ) throws IOException{
+		
+		// requires DOT to be available in the shell
+		
+		Process process = Runtime.getRuntime ().exec ("dot -Tsvg");
+		
+		OutputStream stdin = process.getOutputStream ();
+		InputStream stderr = process.getErrorStream ();
+		InputStream stdout = process.getInputStream ();
+		
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(stdin));
+		
+		BufferedReader reader = new BufferedReader (new InputStreamReader(stdout));
+		FileOutputStream fOut= new FileOutputStream(pathname);
 		
 		try{
-			  // Create file 
-			  FileWriter fstream = new FileWriter(pathname);
-			  final BufferedWriter out = new BufferedWriter(fstream);
 			  
 			  out.write("digraph blocktree {");
 			  
 			  for ( UUID NodeID : lookup.keySet() ){
 				  Node nn = lookup.get(NodeID);
 				  
-				  out.write( nn.nodeNum + "[shape=box] [label=\"" + nn.block.signature.name + ":"+((WeightedIdentity)(nn.block.signature)).weight+"\"];\n" );
+				  out.write( nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color + "] [label=\"" + nn.block.signature.name + ":"+((WeightedIdentity)(nn.block.signature)).weight+"\\n"+nn.confidenceScore+"\"];\n" );
 				  
 				  //a [label="Foo"];
 			  }
@@ -222,11 +238,20 @@ public class BlockTree {
 			  //Close the output stream
 			  out.close();
 			  
+			  
 			  }catch (Exception e){  //Catch exception if any
 				  
 				  System.err.println("Problem Writing File: " + e.getMessage());
 				  
-		}
+			  }
+		
+		// put it into the final file
+		String line = reader.readLine();
+		 while(line != null){
+		  fOut.write(line.getBytes());
+		  fOut.flush();
+		  line = reader.readLine();
+		 }
 		
 	}
 

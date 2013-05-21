@@ -13,6 +13,9 @@ public class Identity {
 	
 	UUID id;
 	
+	// used for graph drawing
+	public String color = null;
+	
 	Identity( String name, UUID id ){
 		
 		this.name = name;

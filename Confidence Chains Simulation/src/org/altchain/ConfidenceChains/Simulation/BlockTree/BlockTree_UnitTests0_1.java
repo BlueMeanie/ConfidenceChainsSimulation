@@ -5,6 +5,7 @@ package org.altchain.ConfidenceChains.Simulation.BlockTree;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import org.altchain.ConfidenceChains.Simulation.Block.BlockHasNoPreviousException;
@@ -38,9 +39,9 @@ public class BlockTree_UnitTests0_1 {
 	
 	private BlockTree createSampleTree1(){
 		
-		WeightedIdentity t1 = new WeightedIdentity("t1",10.0);
-		WeightedIdentity t2 = new WeightedIdentity("t2",10.0);
-		WeightedIdentity t3 = new WeightedIdentity("t3",10.0);
+		WeightedIdentity t1 = new WeightedIdentity("t1",10.0, "blue");
+		WeightedIdentity t2 = new WeightedIdentity("t2",10.0, "red");
+		WeightedIdentity t3 = new WeightedIdentity("t3",10.0, "green");
 
 		// create a bunch of blocks
 		
@@ -50,6 +51,9 @@ public class BlockTree_UnitTests0_1 {
 		SignedBlock sb4 = new SignedBlock( sb2, t1 );
 					sb5 = new SignedBlock( sb4, t2 );
 		SignedBlock sb6 = new SignedBlock( sb4, t3 );
+		SignedBlock sb7 = new SignedBlock( sb4, t1 );
+		SignedBlock sb8 = new SignedBlock( sb6, t2 );
+
 		
 		// create a BlockTree
 		
@@ -61,6 +65,9 @@ public class BlockTree_UnitTests0_1 {
 			myTree.addBlock(sb4);
 			myTree.addBlock(sb5);
 			myTree.addBlock(sb6);
+			myTree.addBlock(sb7);
+			myTree.addBlock(sb8);
+
 			
 		} catch (BlockHasNoPreviousException e) {
 			
@@ -137,11 +144,12 @@ public class BlockTree_UnitTests0_1 {
 	@Test
 	public void testPrintDOT() {
 		
-		LinkedList<String> dotdat = new LinkedList<String>();
-		
-		// .add( "digraph graphname { a -> b -> c; b -> d; }" );
-		
-		sampleTree.printDOT( dotdat , "sampleDOT.asc");
+		try {
+			sampleTree.printDOT( "ispdf.svg");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
