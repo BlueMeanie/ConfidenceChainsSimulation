@@ -53,6 +53,9 @@ public class BlockTree_UnitTests0_1 {
 		SignedBlock sb6 = new SignedBlock( sb4, t3 );
 		SignedBlock sb7 = new SignedBlock( sb4, t1 );
 		SignedBlock sb8 = new SignedBlock( sb6, t2 );
+		SignedBlock sb9 = new SignedBlock( sb6, t1 );
+		SignedBlock sb10 = new SignedBlock( sb6, t3 );
+
 
 		
 		// create a BlockTree
@@ -63,16 +66,31 @@ public class BlockTree_UnitTests0_1 {
 			myTree.addBlock(sb2);
 			myTree.addBlock(sb3);
 			myTree.addBlock(sb4);
+			
+			myTree.printDOT("tree1.svg");
+			
 			myTree.addBlock(sb5);
 			myTree.addBlock(sb6);
 			myTree.addBlock(sb7);
+			
+			myTree.printDOT("tree2.svg");
+
 			myTree.addBlock(sb8);
+			myTree.addBlock(sb9);
+			myTree.addBlock(sb10);
+			
+			myTree.printDOT("tree3.svg");
+
+
 
 			
 		} catch (BlockHasNoPreviousException e) {
 			
 			fail("malformed blocks");
 			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		
