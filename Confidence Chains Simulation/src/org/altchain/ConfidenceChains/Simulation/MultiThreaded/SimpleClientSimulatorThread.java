@@ -6,6 +6,7 @@ import java.util.Observer;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.altchain.ConfidenceChains.Simulation.Block.Block;
 import org.altchain.ConfidenceChains.Simulation.Block.SignedBlock;
 import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 
@@ -33,7 +34,7 @@ public class SimpleClientSimulatorThread extends Thread {
 		    
 	    public void update(Observable obj, Object arg) {
 	        if (arg instanceof SignedBlock) {
-	            handleRecieveBlock(arg);
+	            handleRecieveBlock((Block)arg);
 	        }
 	    }
 	}
@@ -64,6 +65,11 @@ public class SimpleClientSimulatorThread extends Thread {
 		
 		broadcaster.addObserver(observer);
 
+		runMainLoop();
+	      
+	}
+
+	private void runMainLoop() {
 		for( int i=0; i<10; i++ ){
 			
 				// here be the main client thread loop
@@ -85,14 +91,13 @@ public class SimpleClientSimulatorThread extends Thread {
 				}
 			
 		}
-	      
 	}
 	
 	// here is the function called when the Simulator Thread receives a block broadcast
 	
-	private void handleRecieveBlock(Object arg) {
+	private void handleRecieveBlock(Block block) {
 		// here goes the code to handle the block broadcast
-		SignedBlock sb = (SignedBlock)arg;
+		SignedBlock sb = (SignedBlock)block;
 		System.out.println( counter++ + " " + identity.name + " got block! "+sb.id);
 	}
 	
