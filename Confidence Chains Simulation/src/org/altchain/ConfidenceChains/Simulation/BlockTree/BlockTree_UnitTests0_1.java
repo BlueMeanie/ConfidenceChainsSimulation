@@ -80,9 +80,29 @@ public class BlockTree_UnitTests0_1 {
 			myTree.addBlock(sb10);
 			
 			myTree.printDOT("tree3.svg");
+			
+			System.out.println("\n\nhighest confidence score "+myTree.mostConfidentChainScore);
+
+			// now attempt to get best block for identity t1
+			
+			SignedBlock newBlock = myTree.createBestBlock( t1 );
+			myTree.addBlock( newBlock );
+			myTree.printDOT("tree4.svg");
+			
+			SignedBlock newBlock2 = myTree.createBestBlock( t2 );
+			myTree.addBlock( newBlock2 );
+			myTree.printDOT("tree5.svg");
+			
+			SignedBlock newBlock3 = myTree.createBestBlock( t3 );
+			myTree.addBlock( newBlock3 );
+			myTree.printDOT("tree6.svg");
+			
+			SignedBlock newBlock4 = myTree.createBestBlock( t3 );
+			myTree.addBlock( newBlock4 );
+			myTree.printDOT("tree7.svg");
 
 
-
+			
 			
 		} catch (BlockHasNoPreviousException e) {
 			

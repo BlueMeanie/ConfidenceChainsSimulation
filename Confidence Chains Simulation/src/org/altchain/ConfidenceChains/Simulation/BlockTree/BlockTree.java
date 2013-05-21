@@ -156,54 +156,67 @@ public class BlockTree {
 		return retval;
 
 	}
+	
 
-	BlockChain getMostConfidentChain() {
-
-		// form a BlockChain from each leaf in the tree to the root
-
-		// iterate through the leaves
-
-		Iterator leavesIter = leaves.iterator();
-		while (leavesIter.hasNext()) {
-
-			Node tail = (Node) leavesIter.next();
-
-			// create a new BlockChain by iterating from each leaf to the root
-			// then compare the confidence values of the chains
-			// and then return the chain with the highest score
-
+	// this is where the p2p magic happens
+	// this function determines the basic p2p operation of our simulation
+	// it gives us the block that is worth publishing to the network
+	
+	// many questions need to be answered about this algorithm
+	
+	// 1) is the best block ALWAYS a direct descendant of a leaf node?
+	
+	// 2) are there any situations where it's worthwhile to publish a block that 
+	//    does not result in the highest score chain known to the node?
+	
+	// 3) in what situations is it not worth publishing a block?
+	
+	SignedBlock createBestBlock( WeightedIdentity identity ){
+		
+		// this is not proven but it proves basic functionality
+		
+		// cycle through the leaf nodes 
+		
+		// keep the best block on hand
+		SignedBlock bestBlock = null;
+		double bestScore = 0;
+		
+		for ( Node leaf : leaves ){
+			
+			// temporarily add a child node
+			
+			SignedBlock sb = new SignedBlock( leaf.block, identity);
+			
+			Node testNode = new Node( sb );
+			
+			leaf.children.add( testNode );
+			testNode.parent = leaf;
+			
+			// now compute confidence score
+			
+			double thisScore = testNode.computeNodeConfidenceScore();
+			if( thisScore > bestScore ){
+				bestScore = thisScore;
+				bestBlock = sb;
+			}
+			
+			// now detach the node
+			leaf.children.remove(testNode);
+			lookup.remove(testNode.block.id);
+			
+			// node gets destroyed by loop scope
+			
 		}
-
-		return null;
-
+				
+		return bestBlock;
+		
 	}
 
-	// key algorithm
 
-	// this is the heart of our simulation algorithm
-	// it tells us something very simple
-	// if the SimulationThread were to publish a block under a specific identity
-	// would it result in a chain of Confidence Score with MORE GAIN than it's
-	// own
-	// identity weight.
-
-	// another way to explain:
-
-	// any node can publish a block and increase the confidence score simply
-	// because
-	// the chain is longer by 1 block. Thus in the LOWEST CASE, the node will
-	// increase the CS
-	// by the value of it's identity weight. Thus, it's not typically worth
-	// publishing,
-	// because we can be certain that another identity can offer more.
-
-	// this function will tell us whether a block is worth broadcasting
-
-	boolean shouldPublishBlock(WeightedIdentity identity) {
-
-		return false;
-
-	}
+	
+///////////////////////////////////////////////
+//  tree drawing functions
+///////////////////////////////////////////////	
 
 	private static void traverseDOT(Node n, BufferedWriter out)
 			throws IOException {
