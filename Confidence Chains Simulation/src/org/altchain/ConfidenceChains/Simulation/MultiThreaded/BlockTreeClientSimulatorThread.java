@@ -1,6 +1,12 @@
 package org.altchain.ConfidenceChains.Simulation.MultiThreaded;
 
 import java.io.IOException;
+import java.security.Timestamp;
+import java.util.Date;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.altchain.ConfidenceChains.Simulation.Block.Block;
 import org.altchain.ConfidenceChains.Simulation.Block.BlockHasNoPreviousException;
@@ -10,6 +16,14 @@ import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 
 public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread {
 
+	// for logging
+	private final static Logger LOGGER = Logger.getLogger( BlockTreeClientSimulatorThread.class.getName() );
+	
+	static {
+	     // set up logger
+		LOGGER.setLevel( Level.INFO );
+		
+	  }
 	
 	BlockTree blockTree;
 	
@@ -41,20 +55,21 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		
 		try {
 			
-			System.out.println("out!");
 			this.blockTree.addBlock(sb);
 			
 			// generate a diagram
 			
-			this.blockTree.printDOT( "graphs/graph"+this.thisCount+"-"+ blockCounter++ +".svg");
+			String diagramFilename = "graphs/graph"+logPrefix+"-"+this.thisCount+"-"+ blockCounter++ +".svg";
+			this.blockTree.printDOT( diagramFilename );
+			LOGGER.info( identity.color + " : block recieved! " + "<a href=\"" + diagramFilename + "\">graph</a>");
 			
 		} catch (BlockHasNoPreviousException e) {
 			
-			System.out.println("bad block: no previous hash.");
+			LOGGER.warning( "bad block: no previous hash.");
 			
 		} catch (IOException e) {
 			
-			System.out.println("cant write file.");
+			LOGGER.warning( "cant write file.");
 			
 		}
 		
@@ -77,7 +92,7 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 					
 					SignedBlock newBlock = blockTree.createBestBlock(this.identity);
 					
-					System.out.println("new block " + newBlock.id);
+					LOGGER.info( this.identity.color + " : new block " + newBlock.id);
 					
 					// and broadcast it
 					
@@ -85,7 +100,7 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 					
 				} catch (InterruptedException e) {
 					
-					System.out.println("INTERRUPT!");
+					LOGGER.warning("INTERRUPT!");
 					
 				}
 			
@@ -95,7 +110,16 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 	/**
 	 * @param args
 	 */
+	
+	static String logPrefix;
+	
 	public static void main(String[] args) {
+		
+		// set up logs
+		
+		logPrefix = String.valueOf(new java.util.Date().getTime() );
+		
+		setupLogs( logPrefix );
 		
 		// now create a bunch of clientSimulator threads
 		
@@ -111,15 +135,42 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		BlockTreeClientSimulatorThread thread2 = new BlockTreeClientSimulatorThread( genesis, i2);
 		BlockTreeClientSimulatorThread thread3 = new BlockTreeClientSimulatorThread( genesis ,i3);
 
-		System.out.println("starting thread 1...");
+		LOGGER.info("logtest");
+		
+		LOGGER.info("starting thread 1...");
 		thread1.start();
 		
-		System.out.println("starting thread 2...");
+		LOGGER.info("starting thread 2...");
 		thread2.start();
 		
-		System.out.println("starting thread 3...");
+		LOGGER.info("starting thread 3...");
 		thread3.start();
 		
+	}
+
+	private static void setupLogs( String filePrefix ) {
+		try {
+			
+			FileHandler fileTxt = new FileHandler( filePrefix + "-log.html");
+			FileHandler latestLog = new FileHandler( "latest-log.html");
+			
+			
+			// Create txt Formatter
+		    HtmlLogFormatter formatterHTML = new HtmlLogFormatter();
+		    fileTxt.setFormatter(formatterHTML);
+		    latestLog.setFormatter(formatterHTML);
+		    
+		    LOGGER.addHandler(fileTxt);
+		    LOGGER.addHandler(latestLog);
+
+			
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
