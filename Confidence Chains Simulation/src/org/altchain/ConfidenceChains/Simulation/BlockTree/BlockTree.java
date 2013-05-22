@@ -9,11 +9,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.altchain.ConfidenceChains.Simulation.Block.Block;
 import org.altchain.ConfidenceChains.Simulation.Block.BlockHasNoPreviousException;
@@ -28,9 +31,9 @@ public class BlockTree {
 	// tree,
 	// and offers operations on the tree
 
-	HashMap<UUID, Node> lookup = new HashMap<UUID, Node>();
+	ConcurrentHashMap<UUID, Node> lookup = new ConcurrentHashMap<UUID, Node>();
 
-	HashSet<Node> leaves = new HashSet<Node>();
+	Set<Node> leaves = Collections.synchronizedSet( new HashSet<Node>() );
 
 	static int nodeCounter = 0;
 
@@ -123,13 +126,17 @@ public class BlockTree {
 	
 	double mostConfidentChainScore =0;
 
-	BlockTree(SignedBlock genesis) {
+	public BlockTree(SignedBlock genesis) {
 
 		root = new Node(genesis);
 
 		// add it to the lookup
 
 		lookup.put(genesis.id, root);
+		
+		// add it to leaves
+		
+		leaves.add(root);
 
 		// set the initial confidence score
 
@@ -137,7 +144,7 @@ public class BlockTree {
 
 	}
 
-	Node addBlock(SignedBlock block) throws BlockHasNoPreviousException {
+	public Node addBlock(SignedBlock block) throws BlockHasNoPreviousException {
 
 		// first look up the previous id
 
@@ -171,7 +178,7 @@ public class BlockTree {
 	
 	// 3) in what situations is it not worth publishing a block?
 	
-	SignedBlock createBestBlock( WeightedIdentity identity ){
+	public SignedBlock createBestBlock( WeightedIdentity identity ){
 		
 		// this is not proven but it proves basic functionality
 		
@@ -235,7 +242,7 @@ public class BlockTree {
 
 	}
 
-	void printDOT(String pathname) throws IOException {
+	public void printDOT(String pathname) throws IOException {
 
 		// requires DOT to be available in the shell
 
@@ -281,9 +288,14 @@ public class BlockTree {
 	// http://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 
 	private String formatDOTNode(Node nn) {
+		//return nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color
+		//		+ "] [label=\"" + nn.block.signature.name + 
+		//		":" + ((WeightedIdentity) (nn.block.signature)).weight + "\\n"
+		//		+ nn.confidenceScore + "\"];\n";
+		
 		return nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color
-				+ "] [label=\"" + nn.block.signature.name + ":"
-				+ ((WeightedIdentity) (nn.block.signature)).weight + "\\n"
+				+ "] [label=\"" + nn.nodeNum + 
+				"\\n"
 				+ nn.confidenceScore + "\"];\n";
 	}
 

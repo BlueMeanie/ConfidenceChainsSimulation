@@ -69,7 +69,7 @@ public class SimpleClientSimulatorThread extends Thread {
 	      
 	}
 
-	private void runMainLoop() {
+	protected void runMainLoop() {
 		for( int i=0; i<10; i++ ){
 			
 				// here be the main client thread loop
@@ -95,7 +95,7 @@ public class SimpleClientSimulatorThread extends Thread {
 	
 	// here is the function called when the Simulator Thread receives a block broadcast
 	
-	private void handleRecieveBlock(Block block) {
+	protected void handleRecieveBlock(Block block) {
 		// here goes the code to handle the block broadcast
 		SignedBlock sb = (SignedBlock)block;
 		System.out.println( counter++ + " " + identity.name + " got block! "+sb.id);
