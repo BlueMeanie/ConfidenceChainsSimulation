@@ -10,6 +10,6 @@ The Confidence Chains whitepaper can be found here: https://docs.google.com/file
 
 currently requires JDK (later will offer Jar file).  Eclipse is probably optimal.
 
-also to render block tree graphs, DOT must be installed on the command line.
+also to render block tree graphs, DOT must be installed on the command line(highly recommended).
 
 for questions and comments email josh.josh421 -at- gmail.com
