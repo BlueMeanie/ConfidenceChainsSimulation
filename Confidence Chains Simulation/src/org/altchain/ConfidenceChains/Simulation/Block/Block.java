@@ -8,6 +8,9 @@ public class Block {
 	
 	public UUID id;
 	
+	private static int counter = 0;
+	public int serialNum = counter++;
+	
 	public Block previous;
 	
 	public static ConcurrentHashMap<UUID, Block> uidLookup = new ConcurrentHashMap<UUID,Block>();

@@ -290,7 +290,7 @@ public class BlockTree {
 		//		+ nn.confidenceScore + "\"];\n";
 		
 		return nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color
-				+ "] [label=\"" + nn.nodeNum + 
+				+ "] [label=\"#" + nn.block.serialNum + 
 				"\\n"
 				+ nn.confidenceScore + "\"];\n";
 	}
