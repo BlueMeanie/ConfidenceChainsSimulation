@@ -7,36 +7,46 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import org.altchain.ConfidenceChains.Simulation.MultiThreaded.BlockTreeClientSimulatorThread.threadIDLogRecord;
+
 public class HtmlLogFormatter extends Formatter {
 
 	// This method is called for every log records
 	
+	  static long millisecStart = 0;
+	
 	  public String format(LogRecord rec) {
 		  
-	    StringBuffer buf = new StringBuffer(1000);
+		if( millisecStart == 0 ) {
+			
+			millisecStart = rec.getMillis();
+			
+		}
+		
+		threadIDLogRecord idRec = (threadIDLogRecord)rec;
+						  
+	    StringBuffer buf = new StringBuffer( 1000  );
 	    // Bold any levels >= WARNING
-	    buf.append("<tr>");
-	    buf.append("<td>");
+	    buf.append( "<div style=\"position: absolute; top: " + ( rec. getMillis() - millisecStart ) * 6  + ";" +
+	                                                 "left: " + idRec.threadId * 100 + "\">" );
 
 	    if (rec.getLevel().intValue() >= Level.WARNING.intValue()) {
 	    	
-	      buf.append("<b>");
-	      buf.append(rec.getLevel());
-	      buf.append("</b>");
+	      buf.append( "<b>" );
+	      buf.append( rec.getLevel() );
+	      buf.append( "</b>" );
 	      
 	    } else {
-	      buf.append(rec.getLevel());
+	      buf.append( rec.getLevel() );
 	    }
 	    
-	    buf.append("</td>");
-	    buf.append("<td>");
-	    buf.append(calcDate(rec.getMillis()));
-	    buf.append("</td>");
-	    buf.append('\n');
-	    buf.append("<td>"+formatMessage(rec)+"</td>");
-	    buf.append("</tr>\n");
+	    buf.append( " " + calcDate(rec.getMillis()) );
+	    buf.append( " " + formatMessage(rec) );
+	    
+	    buf.append("</div>\n");
 	    
 	    return buf.toString();
+	    
 	  }
 
 	  private String calcDate(long millisecs) {
@@ -49,21 +59,16 @@ public class HtmlLogFormatter extends Formatter {
 	  // formatter is created
 	  public String getHead(Handler h) {
 		  
-	    return  "<HTML>\n<HEAD>\n" +
-	    		"<title>Confidence Chains Simulator Log " + ( new Date() ) + "</title>" +  
-	            "</title>\n</HEAD>\n" +
-	    	    "<BODY>\n" +
-	            "<table width=\"100%\" border>\n  " +
-	            "<tr><th>Level</th>" +
-	            "<th>Time</th>" +
-	            "<th>Log Message</th>" +
-	            "</tr>\n";
+	    return  "<html><title>Confidence Chains Simulation</title><body>";
+	    
 	  }
 
 	  // This method is called just after the handler using this
 	  // formatter is closed
 	  public String getTail(Handler h) {
-	    return "</table>\n </BODY>\n</HTML>\n";
+		  
+	    return "</body></html>"; 
+
 	  }
 
 }

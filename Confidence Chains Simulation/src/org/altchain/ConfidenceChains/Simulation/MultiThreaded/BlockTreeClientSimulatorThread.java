@@ -1,10 +1,21 @@
 package org.altchain.ConfidenceChains.Simulation.MultiThreaded;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.security.Timestamp;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
@@ -16,20 +27,38 @@ import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 
 public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread {
 
-	// for logging
-	private final static Logger LOGGER = Logger.getLogger( BlockTreeClientSimulatorThread.class.getName() );
 	
-	static {
-	     // set up logger
-		LOGGER.setLevel( Level.INFO );
-		
-	  }
 	
 	BlockTree blockTree;
 	
 	static int counter=0;
 	
 	int thisCount;
+	
+	private Logger LOGGER = null;
+	
+	static String logPrefix;
+	static {
+		
+		logPrefix = String.valueOf( new java.util.Date().getTime() );
+
+	}
+	
+	
+	public static class threadIDLogRecord extends LogRecord {
+
+		Integer threadId = null;
+		
+		public threadIDLogRecord(Level level, String msg, Integer threadID ) {
+		
+			super(level, msg);
+			
+			this.threadId = threadID;
+			
+		}
+		
+		
+	}
 	
 	BlockTreeClientSimulatorThread(SignedBlock genesis, WeightedIdentity identity) {
 		
@@ -38,12 +67,43 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		blockTree = new BlockTree(genesis);
 		
 		thisCount = counter++;
-
+		
+		
+		
+		try {
+			
+			// set up logging.
+			
+			LOGGER = Logger.getLogger( BlockTreeClientSimulatorThread.class.getName() + thisCount );
+			LOGGER.setLevel( Level.INFO );
+			
+			FileHandler fileTxt = new FileHandler( logPrefix + "-" + thisCount + "-log.html");
+			FileHandler latestLog = new FileHandler( "latest-log-" + thisCount + ".html");
+			
+			// Create txt Formatter
+		    HtmlLogFormatter formatterHTML = new HtmlLogFormatter();
+		    fileTxt.setFormatter(formatterHTML);
+		    latestLog.setFormatter(formatterHTML);
+		    
+		    LOGGER.addHandler(fileTxt);
+		    LOGGER.addHandler(latestLog);
+		    
+		    //LOGGER.info("starting thread "+ thisCount +"...");
+			
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
+	
 	
 	int blockCounter = 0;
 	
-	protected void handleRecieveBlock(Block block) {
+	protected synchronized void handleRecieveBlock(Block block) {
 		
 		System.out.println("block recieved!");
 		
@@ -61,15 +121,18 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 			
 			String diagramFilename = "graphs/graph"+logPrefix+"-"+this.thisCount+"-"+ blockCounter++ +".svg";
 			this.blockTree.printDOT( diagramFilename );
-			LOGGER.info( identity.color + " : block recieved! " + "<a href=\"" + diagramFilename + "\">graph</a>");
+			
+			LOGGER.log( new threadIDLogRecord( Level.INFO, 
+											   "<a href=\"" + diagramFilename + "\">GRAPH</a>", 
+											   thisCount ) );
 			
 		} catch (BlockHasNoPreviousException e) {
 			
-			LOGGER.warning( "bad block: no previous hash.");
+			//LOGGER.warning( "bad block: no previous hash.");
 			
 		} catch (IOException e) {
 			
-			LOGGER.warning( "cant write file.");
+			//LOGGER.warning( "cant write file.");
 			
 		}
 		
@@ -92,15 +155,17 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 					
 					SignedBlock newBlock = blockTree.createBestBlock(this.identity);
 					
-					LOGGER.info( this.identity.color + " : new block " + newBlock.id);
-					
+					LOGGER.log( new threadIDLogRecord( Level.INFO, 
+							    this.identity.color + " : new block " + newBlock.id, 
+							    thisCount ) );
+
 					// and broadcast it
 					
 					broadcaster.broadcastBlock(newBlock);
 					
 				} catch (InterruptedException e) {
 					
-					LOGGER.warning("INTERRUPT!");
+					//LOGGER.warning("INTERRUPT!");
 					
 				}
 			
@@ -111,15 +176,8 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 	 * @param args
 	 */
 	
-	static String logPrefix;
 	
 	public static void main(String[] args) {
-		
-		// set up logs
-		
-		logPrefix = String.valueOf(new java.util.Date().getTime() );
-		
-		setupLogs( logPrefix );
 		
 		// now create a bunch of clientSimulator threads
 		
@@ -134,43 +192,67 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		BlockTreeClientSimulatorThread thread1 = new BlockTreeClientSimulatorThread( genesis, i1);
 		BlockTreeClientSimulatorThread thread2 = new BlockTreeClientSimulatorThread( genesis, i2);
 		BlockTreeClientSimulatorThread thread3 = new BlockTreeClientSimulatorThread( genesis ,i3);
-
-		LOGGER.info("logtest");
 		
-		LOGGER.info("starting thread 1...");
 		thread1.start();
 		
-		LOGGER.info("starting thread 2...");
 		thread2.start();
 		
-		LOGGER.info("starting thread 3...");
 		thread3.start();
+		
+		// now concatenate log files
+		
+		List<String> files = new LinkedList<String>();
+		
+		for ( int i=0; i<counter; i++ ){
+			
+			files.add("latest-log-"+i+".html");
+			
+		}
+		
+		String finalFile = "latest-log-final2.html";
+		
+		try {
+			concatLogFiles(files, finalFile);
+		} catch (FileNotFoundException e) {
+			System.err.println("LOG FILE CONCAT ERROR!");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.err.println("LOG FILE CONCAT ERROR! IO issue.");
+		}
+
+		
 		
 	}
 
-	private static void setupLogs( String filePrefix ) {
-		try {
-			
-			FileHandler fileTxt = new FileHandler( filePrefix + "-log.html");
-			FileHandler latestLog = new FileHandler( "latest-log.html");
-			
-			
-			// Create txt Formatter
-		    HtmlLogFormatter formatterHTML = new HtmlLogFormatter();
-		    fileTxt.setFormatter(formatterHTML);
-		    latestLog.setFormatter(formatterHTML);
-		    
-		    LOGGER.addHandler(fileTxt);
-		    LOGGER.addHandler(latestLog);
+	private static void concatLogFiles(List<String> files, String finalFile)
+			throws FileNotFoundException, IOException {
+//		OutputStream out = new FileOutputStream(finalFile);
+//	    byte[] buf = new byte[1 << 20];
+//	    for (String file : files) {
+//	        InputStream in = new FileInputStream(file);
+//	        int b = 0;
+//	        while ( (b = in.read(buf)) >= 0) {
+//	            out.write(buf, 0, b);
+//	            out.flush();
+//	        }
+//	    }
+//	    out.close();
+		
+		PrintWriter pw = new PrintWriter(new FileOutputStream(finalFile));
+      
+        for (int i = 0; i < files.size(); i++) {
 
-			
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+                //System.out.println("Processing " + files[i].getPath() + "... ");
+                BufferedReader br = new BufferedReader(new FileReader( files.get(i) ) );
+                String line = br.readLine();
+                while (line != null) {
+                        pw.println(line);
+                        line = br.readLine();
+                }
+                br.close();
+        }
+        pw.close();
+
 	}
 
 }

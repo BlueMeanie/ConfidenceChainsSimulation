@@ -87,9 +87,6 @@ public class BlockTree {
 
 			// then compute the ConfidenceScore
 
-			System.out.println("\ncomputing confidence score. signed["
-					+ this.block.signature.name + "], id=" + this.block.id
-					+ " :");
 
 			Node currentNode = this;
 			BlockChain thisChain = new BlockChain(this.block);
@@ -107,7 +104,6 @@ public class BlockTree {
 
 			thisChain.printChain("chain ");
 			double score = thisChain.computeConfidenceScore();
-			System.out.println("score :" + score);
 
 			return score;
 

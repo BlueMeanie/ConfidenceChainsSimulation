@@ -61,6 +61,13 @@ public class SimpleClientSimulatorThread extends Thread {
 	
 	public void run () {
 		
+		try {
+			this.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		System.out.println("starting "+identity.name+" thread...");
 		
 		broadcaster.addObserver(observer);
