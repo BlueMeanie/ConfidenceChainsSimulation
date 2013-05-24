@@ -25,7 +25,7 @@ import org.altchain.ConfidenceChains.Simulation.Block.SignedBlock;
 import org.altchain.ConfidenceChains.Simulation.BlockTree.BlockTree;
 import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 
-public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread {
+public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThread {
 
 	
 	public static final String simulationTitle = "Block Tree Simulator 0.1";
@@ -45,7 +45,7 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		
 		// set up logging.
 		
-		LOGGER = Logger.getLogger( BlockTreeClientSimulatorThread.class.getName() );
+		LOGGER = Logger.getLogger( TriumvirateClientSimulatorThread.class.getName() );
 		LOGGER.setLevel( Level.INFO );
 					
 		FileHandler fileTxt;
@@ -96,7 +96,7 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		
 	}
 	
-	BlockTreeClientSimulatorThread(SignedBlock genesis, WeightedIdentity identity) {
+	TriumvirateClientSimulatorThread(SignedBlock genesis, WeightedIdentity identity) {
 		
 		super(identity);
 		
@@ -136,28 +136,35 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 			
 		} catch (BlockHasNoPreviousException e) {
 			
-			//LOGGER.warning( "bad block: no previous hash.");
+			LOGGER.log( new threadIDLogRecord( Level.INFO, 
+					   "<span style=\"color:red;\">BLOCK HAS NO PREVIOUS</span>",
+					thisCount ) );
 			
 		} catch (IOException e) {
 			
-			//LOGGER.warning( "cant write file.");
+			LOGGER.log( new threadIDLogRecord( Level.INFO, 
+					   "<span style=\"color:red;\">CANT WRITE FILE</span>",
+					thisCount ) );
+			
+		} catch (Exception e ) {
+			
+			LOGGER.log( new threadIDLogRecord( Level.INFO, 
+					   "<span style=\"color:red;\">ERRAR</span>",
+					thisCount ) );
 			
 		}
 		
-		
-		//SignedBlock sb = (SignedBlock)block;
-		//System.out.println( counter++ + " " + identity.name + " got block! "+sb.id);
 	}
 	
 	protected void runMainLoop() {
 		
-		for( int i=0; i<100; i++ ){
+		for( int i=0; i<200; i++ ){
 			
 				// here be the main client thread loop
 
 				try {
 					
-					sleep( 1 );
+					sleep( rand.nextInt(10) );
 					
 					// now generate a block
 					
@@ -208,9 +215,9 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 		
 		SignedBlock genesis = new SignedBlock(null, i1);
 		
-		BlockTreeClientSimulatorThread thread1 = new BlockTreeClientSimulatorThread( genesis, i1);
-		BlockTreeClientSimulatorThread thread2 = new BlockTreeClientSimulatorThread( genesis, i2);
-		BlockTreeClientSimulatorThread thread3 = new BlockTreeClientSimulatorThread( genesis ,i3);
+		TriumvirateClientSimulatorThread thread1 = new TriumvirateClientSimulatorThread( genesis, i1);
+		TriumvirateClientSimulatorThread thread2 = new TriumvirateClientSimulatorThread( genesis, i2);
+		TriumvirateClientSimulatorThread thread3 = new TriumvirateClientSimulatorThread( genesis ,i3);
 		
 		thread1.start();
 		
