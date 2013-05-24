@@ -20,9 +20,8 @@ public class HtmlLogFormatter extends Formatter {
 	  String[] columnHeaders;
 	  
 	  static final int XOffset = 100;
-
 	  
-	  HtmlLogFormatter ( String title, String introMsg, String[] columnHeaders ){
+	  HtmlLogFormatter ( String title, String introMsg, String[] columnHeaders ) {
 		  
 		  super();
 		  
@@ -47,7 +46,7 @@ public class HtmlLogFormatter extends Formatter {
 	    StringBuffer buf = new StringBuffer( 1000  );
 	    // Bold any levels >= WARNING
 	    buf.append( "<div style=\"position: absolute; top: " + calculateYPosition(rec) + ";" +
-	                                                 "left: " + ( ( idRec.threadId * 300 ) + XOffset ) + "\">\n" );
+	                                                 "left: " + ( ( idRec.columnNum * 300 ) + XOffset ) + "\">\n" );
 	    
 	    //<div style="position: absolute; top: 648;width:100%;height:1px;background-color:#CCCCCC;">
 
@@ -68,7 +67,7 @@ public class HtmlLogFormatter extends Formatter {
 	    
 	    buf.append("</div>\n");
 	    
-	    buf.append( "<div class=\"seconds-ruler\" style=\"position: absolute; top: " + ( calculateYPosition(rec) + 18 ) + ";width:100%;height:1px;background-color:#CCCCCC;\">\n" );
+	    buf.append( "<div class=\"seconds-ruler\" style=\"position: absolute; top: " + ( calculateYPosition(rec) + 18 ) + ";width:4000px;height:1px;background-color:#CCCCCC;\">\n" );
 	    buf.append( ( rec.getMillis() - millisecStart ) + "ms" );
 	    buf.append("</div>\n");
 
@@ -99,11 +98,8 @@ public class HtmlLogFormatter extends Formatter {
 	      buf.append( "<html><head> <link rel=\"stylesheet\" type=\"text/css\" href=\"logstyle.css\"></head><title>"+this.title+"</title><body><h1>" + this.title + "</h1>" + "<p>"+ this.introMsg + "</p>" );
 	    
 	      // also make vertical rulers for each thread
-	      
-	      // should have same amount of column headers as threads
-	      assert( columnHeaders.length == TriumvirateClientSimulatorThread.counter );
-	    		
-	      for( int i=0; i< TriumvirateClientSimulatorThread.counter; i++ ) {
+	      	
+	      for( int i=0; i< columnHeaders.length ; i++ ) {
 	    	  
 	  	    buf.append( "<div style=\"position: absolute; left: " + ( (i*300) + XOffset ) + ";top:200px;height:100000px;width:1px;background-color:#888888;\">\n" );
 	  	    buf.append("</div>");

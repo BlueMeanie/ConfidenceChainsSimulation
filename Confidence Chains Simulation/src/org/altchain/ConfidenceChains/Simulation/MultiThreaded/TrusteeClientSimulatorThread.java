@@ -215,7 +215,7 @@ public class TrusteeClientSimulatorThread extends SimpleClientSimulatorThread {
 		WeightedIdentity i2 = new WeightedIdentity("i2",1.00,"red");
 		WeightedIdentity i3 = new WeightedIdentity("i3",1.00,"green");
 		WeightedIdentity i4 = new WeightedIdentity("i4",1.00,"orange");
-		WeightedIdentity i5 = new WeightedIdentity("i5",1.00,"violet");
+		WeightedIdentity i5 = new WeightedIdentity("i5",3.00,"violet");
 
 		
 		// i1 is the ISSUER so we will sign the genesis block with it

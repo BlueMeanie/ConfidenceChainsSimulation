@@ -32,12 +32,6 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 	
 	BlockTree blockTree;
 	
-	public static int counter=0;
-	
-	int thisCount;
-	
-	private static Logger LOGGER = null;
-	
 	static String logPrefix;
 	static {
 		
@@ -89,7 +83,7 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 		
 		blockTree = new BlockTree(genesis);
 		
-		thisCount = counter++;
+		thisThreadNum = threadCounter++;
 		
 	}
 	
@@ -114,30 +108,30 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 			
 
 			
-			String diagramFilename = "graphs/graph"+logPrefix+"-"+this.thisCount+"-"+ blockCounter++ +".svg";
+			String diagramFilename = "graphs/graph"+logPrefix+"-"+this.thisThreadNum+"-"+ blockCounter++ +".svg";
 			this.blockTree.printDOT( diagramFilename );
 			
 			LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 											   "<a href=\"" + diagramFilename + "\">block recieved #"+ sb.serialNum +"</a>", 
-											   thisCount ) );
+											   thisThreadNum ) );
 			
 		} catch (BlockHasNoPreviousException e) {
 			
 			LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 					   "<span style=\"color:red;\">BLOCK HAS NO PREVIOUS</span>",
-					thisCount ) );
+					thisThreadNum ) );
 			
 		} catch (IOException e) {
 			
 			LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 					   "<span style=\"color:red;\">CANT WRITE FILE</span>",
-					thisCount ) );
+					thisThreadNum ) );
 			
 		} catch (Exception e ) {
 			
 			LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 					   "<span style=\"color:red;\">ERRAR</span>",
-					thisCount ) );
+					thisThreadNum ) );
 			
 		}
 		
@@ -164,13 +158,13 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 						
 						LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 								   "<span style=\"color:red;\">THREAD FAIL</span>",
-								thisCount ) );
+								thisThreadNum ) );
 						
 					}
 					
 					LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 							    "new block #" + newBlock.serialNum  
-							    , thisCount ) );
+							    , thisThreadNum ) );
 
 					// and broadcast it
 				
@@ -189,7 +183,7 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 		
 		LOGGER.log( new ThreadIDLogRecord( Level.INFO, 
 				"<span style=\"color:red;\">THREAD FAILED: " + e.getMessage() + "</span>",
-			    thisCount ) );
+			    thisThreadNum ) );
 	
 	}
 	

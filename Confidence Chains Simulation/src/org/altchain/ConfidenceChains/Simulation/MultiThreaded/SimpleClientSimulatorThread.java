@@ -5,6 +5,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.logging.Logger;
 
 import org.altchain.ConfidenceChains.Simulation.Block.Block;
 import org.altchain.ConfidenceChains.Simulation.Block.SignedBlock;
@@ -26,9 +27,15 @@ public class SimpleClientSimulatorThread extends Thread {
 		
 	}
 	
+	public static int threadCounter=0;
+	
+	int thisThreadNum;
+	
+	protected static Logger LOGGER = null;
+	
 	public static P2PBroadcast broadcaster = new P2PBroadcast();
 	
-	int counter = 0;
+	int blockCounter = 0;
 	
 	public class PeerNode implements Observer {
 		    
@@ -116,7 +123,7 @@ public class SimpleClientSimulatorThread extends Thread {
 	protected void handleRecieveBlock(Block block) {
 		// here goes the code to handle the block broadcast
 		SignedBlock sb = (SignedBlock)block;
-		System.out.println( counter++ + " " + identity.name + " got block! "+sb.id);
+		System.out.println( blockCounter++ + " " + identity.name + " got block! "+sb.id);
 	}
 	
 	
