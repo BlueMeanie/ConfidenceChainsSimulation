@@ -158,13 +158,13 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 	
 	protected void runMainLoop() {
 		
-		for( int i=0; i<200; i++ ){
+		for( int i=0; i<20; i++ ){
 			
 				// here be the main client thread loop
 
 				try {
 					
-					sleep( rand.nextInt(10) );
+					sleep( rand.nextInt(1000) );
 					
 					// now generate a block
 					
@@ -198,18 +198,21 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 		}
 	}
 
-	/**
-	 * @param args
-	 */
+	protected void threadFailed(Exception e) {
+		
+		LOGGER.log( new threadIDLogRecord( Level.INFO, 
+				"<span style=\"color:red;\">THREAD FAILED: " + e.getMessage() + "</span>",
+			    thisCount ) );
 	
+	}
 	
 	public static void main(String[] args) {
 		
 		// now create a bunch of clientSimulator threads
 		
-		WeightedIdentity i1 = new WeightedIdentity("i1",10.00,"blue");
-		WeightedIdentity i2 = new WeightedIdentity("i2",10.00,"red");
-		WeightedIdentity i3 = new WeightedIdentity("i3",10.00,"green");
+		WeightedIdentity i1 = new WeightedIdentity("i1",1.00,"blue");
+		WeightedIdentity i2 = new WeightedIdentity("i2",1.00,"red");
+		WeightedIdentity i3 = new WeightedIdentity("i3",1.00,"green");
 		
 		// i1 is the ISSUER so we will sign the genesis block with it
 		
