@@ -7,8 +7,6 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import org.altchain.ConfidenceChains.Simulation.MultiThreaded.TriumvirateClientSimulatorThread.threadIDLogRecord;
-
 public class HtmlLogFormatter extends Formatter {
 
 	// This method is called for every log records
@@ -44,7 +42,7 @@ public class HtmlLogFormatter extends Formatter {
 			
 		}
 		
-		threadIDLogRecord idRec = (threadIDLogRecord)rec;
+		ThreadIDLogRecord idRec = (ThreadIDLogRecord)rec;
 						  
 	    StringBuffer buf = new StringBuffer( 1000  );
 	    // Bold any levels >= WARNING

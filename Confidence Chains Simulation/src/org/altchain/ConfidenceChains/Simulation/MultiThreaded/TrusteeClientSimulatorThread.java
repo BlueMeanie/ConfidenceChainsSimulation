@@ -25,7 +25,7 @@ import org.altchain.ConfidenceChains.Simulation.Block.SignedBlock;
 import org.altchain.ConfidenceChains.Simulation.BlockTree.BlockTree;
 import org.altchain.ConfidenceChains.Simulation.Identity.WeightedIdentity;
 
-public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThread {
+public class TrusteeClientSimulatorThread extends SimpleClientSimulatorThread {
 
 	
 	public static final String simulationTitle = "Block Tree Simulator 0.1";
@@ -45,20 +45,20 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 		
 		// set up logging.
 		
-		LOGGER = Logger.getLogger( TriumvirateClientSimulatorThread.class.getName() );
+		LOGGER = Logger.getLogger( TrusteeClientSimulatorThread.class.getName() );
 		LOGGER.setLevel( Level.INFO );
 					
 		FileHandler fileTxt;
 		try {
 			
-			fileTxt = new FileHandler( logPrefix +  "-log.html" );
-			FileHandler latestLog = new FileHandler( "latest-log.html" );
+			fileTxt = new FileHandler( logPrefix +  "trustee-log.html" );
+			FileHandler latestLog = new FileHandler( "latest-trustee-log.html" );
 			
-			String[] columnHeaders = new String[] {"blue", "red", "green" };
+			String[] columnHeaders = new String[] {"blue", "red", "green", "orange", "violet" };
 			
 			// Create txt Formatter
 			HtmlLogFormatter formatterHTML = new HtmlLogFormatter("Confidence Chains Simulator 0.1", 
-					"This is a simple simulation of how nodes in a peer to peer network will construct confidence chains.  The power structure is TRIUMVIRATE, or 3 equally powerful identities.",
+					"This is a simple simulation of how nodes in a peer to peer network will construct confidence chains.  The power structure is TRUSTEE : 5 equally powerful identities.",
 					columnHeaders);
 			
 			fileTxt.setFormatter(formatterHTML);
@@ -81,9 +81,22 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 	}
 	
 	
+	public static class threadIDLogRecord extends LogRecord {
+
+		Integer threadId = null;
+		
+		public threadIDLogRecord(Level level, String msg, Integer threadID ) {
+		
+			super(level, msg);
+			
+			this.threadId = threadID;
+			
+		}
+		
+		
+	}
 	
-	
-	TriumvirateClientSimulatorThread(SignedBlock genesis, WeightedIdentity identity) {
+	TrusteeClientSimulatorThread(SignedBlock genesis, WeightedIdentity identity) {
 		
 		super(identity);
 		
@@ -145,9 +158,10 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 	
 	protected void runMainLoop() {
 		
-		for( int i=0; i<20; i++ ){
+		for( int i=0; i<30; i++ ){
 			
 				// here be the main client thread loop
+			    // loop is number blocks broadcasted by each client
 
 				try {
 					
@@ -200,20 +214,26 @@ public class TriumvirateClientSimulatorThread extends SimpleClientSimulatorThrea
 		WeightedIdentity i1 = new WeightedIdentity("i1",1.00,"blue");
 		WeightedIdentity i2 = new WeightedIdentity("i2",1.00,"red");
 		WeightedIdentity i3 = new WeightedIdentity("i3",1.00,"green");
+		WeightedIdentity i4 = new WeightedIdentity("i4",1.00,"orange");
+		WeightedIdentity i5 = new WeightedIdentity("i5",1.00,"violet");
+
 		
 		// i1 is the ISSUER so we will sign the genesis block with it
 		
 		SignedBlock genesis = new SignedBlock(null, i1);
 		
-		TriumvirateClientSimulatorThread thread1 = new TriumvirateClientSimulatorThread( genesis, i1);
-		TriumvirateClientSimulatorThread thread2 = new TriumvirateClientSimulatorThread( genesis, i2);
-		TriumvirateClientSimulatorThread thread3 = new TriumvirateClientSimulatorThread( genesis ,i3);
-		
-		thread1.start();
-		
-		thread2.start();
-		
+		TrusteeClientSimulatorThread thread1 = new TrusteeClientSimulatorThread( genesis, i1);
+		TrusteeClientSimulatorThread thread2 = new TrusteeClientSimulatorThread( genesis, i2);
+		TrusteeClientSimulatorThread thread3 = new TrusteeClientSimulatorThread( genesis ,i3);
+		TrusteeClientSimulatorThread thread4 = new TrusteeClientSimulatorThread( genesis ,i4);
+		TrusteeClientSimulatorThread thread5 = new TrusteeClientSimulatorThread( genesis ,i5);
+
+		thread1.start();		
+		thread2.start();		
 		thread3.start();
+		thread4.start();
+		thread5.start();
+
 
 	}
 
