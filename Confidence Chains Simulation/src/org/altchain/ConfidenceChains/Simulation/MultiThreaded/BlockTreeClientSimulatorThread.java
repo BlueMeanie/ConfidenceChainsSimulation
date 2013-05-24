@@ -151,17 +151,28 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 	
 	protected void runMainLoop() {
 		
-		for( int i=0; i<10; i++ ){
+		for( int i=0; i<100; i++ ){
 			
 				// here be the main client thread loop
 
 				try {
 					
-					sleep( rand.nextInt(10) );
+					sleep( 1 );
 					
 					// now generate a block
 					
-					SignedBlock newBlock = blockTree.createBestBlock(this.identity);
+					SignedBlock newBlock = null;
+					try {
+						
+						newBlock = blockTree.createBestBlock(this.identity);
+						
+					} catch (Exception e) {
+						
+						LOGGER.log( new threadIDLogRecord( Level.INFO, 
+								   "<span style=\"color:red;\">THREAD FAIL</span>",
+								thisCount ) );
+						
+					}
 					
 					LOGGER.log( new threadIDLogRecord( Level.INFO, 
 							    "new block #" + newBlock.serialNum  
@@ -173,7 +184,7 @@ public class BlockTreeClientSimulatorThread extends SimpleClientSimulatorThread 
 					
 				} catch (InterruptedException e) {
 					
-					//LOGGER.warning("INTERRUPT!");
+					LOGGER.warning("INTERRUPT!");
 					
 				}
 			

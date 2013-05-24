@@ -33,7 +33,7 @@ public class BlockTree {
 
 	ConcurrentHashMap<UUID, Node> lookup = new ConcurrentHashMap<UUID, Node>();
 
-	Set<Node> leaves = Collections.synchronizedSet( new HashSet<Node>() );
+	Set<Node> leaves = Collections.synchronizedSet(new HashSet<Node>());
 
 	static int nodeCounter = 0;
 
@@ -58,10 +58,15 @@ public class BlockTree {
 		}
 
 		void addChild(Node n) {
-			// remove from leaves
-			leaves.remove(this);
-			// add new leaf
-			leaves.add(n);
+
+			synchronized (leaves) {
+
+				// remove from leaves
+				leaves.remove(this);
+				// add new leaf
+				leaves.add(n);
+
+			}
 
 			// add the child
 			children.add(n);
@@ -70,9 +75,9 @@ public class BlockTree {
 
 			// now compute the confidence score for the node
 			n.confidenceScore = n.computeNodeConfidenceScore();
-			
+
 			// if this node is the most confident chain, update the value
-			if ( n.confidenceScore > mostConfidentChainScore ){
+			if (n.confidenceScore > mostConfidentChainScore) {
 				mostConfidentChain = n;
 				mostConfidentChainScore = n.confidenceScore;
 			}
@@ -86,7 +91,6 @@ public class BlockTree {
 			// basically we construct a BlockChain type from Leaf-to-Root path
 
 			// then compute the ConfidenceScore
-
 
 			Node currentNode = this;
 			BlockChain thisChain = new BlockChain(this.block);
@@ -102,7 +106,7 @@ public class BlockTree {
 
 			}
 
-			thisChain.printChain("chain ");
+			// thisChain.printChain("chain ");
 			double score = thisChain.computeConfidenceScore();
 
 			return score;
@@ -117,10 +121,10 @@ public class BlockTree {
 	// they do not change over time, if the weights are DYNAMIC, then the
 	// block chain confidence calculations need to be recomputed each time
 	// they are polled.
-	
+
 	Node mostConfidentChain;
-	
-	double mostConfidentChainScore =0;
+
+	double mostConfidentChainScore = 0;
 
 	public BlockTree(SignedBlock genesis) {
 
@@ -129,9 +133,9 @@ public class BlockTree {
 		// add it to the lookup
 
 		lookup.put(genesis.id, root);
-		
+
 		// add it to leaves
-		
+
 		leaves.add(root);
 
 		// set the initial confidence score
@@ -159,67 +163,84 @@ public class BlockTree {
 		return retval;
 
 	}
-	
 
 	// this is where the p2p magic happens
 	// this function determines the basic p2p operation of our simulation
 	// it gives us the block that is worth publishing to the network
-	
+
 	// many questions need to be answered about this algorithm
-	
+
 	// 1) is the best block ALWAYS a direct descendant of a leaf node?
-	
-	// 2) are there any situations where it's worthwhile to publish a block that 
-	//    does not result in the highest score chain known to the node?
-	
+
+	// 2) are there any situations where it's worthwhile to publish a block that
+	// does not result in the highest score chain known to the node?
+
 	// 3) in what situations is it not worth publishing a block?
-	
-	public SignedBlock createBestBlock( WeightedIdentity identity ){
-		
+
+	public synchronized SignedBlock createBestBlock(WeightedIdentity identity) {
+
 		// this is not proven but it proves basic functionality
-		
-		// cycle through the leaf nodes 
-		
+
+		// cycle through the leaf nodes
+
 		// keep the best block on hand
 		SignedBlock bestBlock = null;
 		double bestScore = 0;
+
+		// problem is that _leaves_ is being modified while iterating
+		// probably by calling addBlock while in this loop.
+
+		// Exception in thread "Thread-2"
+		// java.util.ConcurrentModificationException
+		// at java.util.HashMap$HashIterator.nextEntry(HashMap.java:793)
+		// at java.util.HashMap$KeyIterator.next(HashMap.java:828)
+		// at
+		// org.altchain.ConfidenceChains.Simulation.BlockTree.BlockTree.createBestBlock(BlockTree.java:187)
+		// at
+		// org.altchain.ConfidenceChains.Simulation.MultiThreaded.BlockTreeClientSimulatorThread.runMainLoop(BlockTreeClientSimulatorThread.java:164)
+		// at
+		// org.altchain.ConfidenceChains.Simulation.MultiThreaded.SimpleClientSimulatorThread.run(SimpleClientSimulatorThread.java:75)
+
+		// http://stackoverflow.com/questions/8189466/java-util-concurrentmodificationexception
 		
-		for ( Node leaf : leaves ){
-			
-			// temporarily add a child node
-			
-			SignedBlock sb = new SignedBlock( leaf.block, identity);
-			
-			Node testNode = new Node( sb );
-			
-			leaf.children.add( testNode );
-			testNode.parent = leaf;
-			
-			// now compute confidence score
-			
-			double thisScore = testNode.computeNodeConfidenceScore();
-			if( thisScore > bestScore ){
-				bestScore = thisScore;
-				bestBlock = sb;
+		synchronized (leaves) {
+
+			for (Node leaf : leaves) {
+
+				// temporarily add a child node
+
+				SignedBlock sb = new SignedBlock(leaf.block, identity);
+
+				Node testNode = new Node(sb);
+
+				leaf.children.add(testNode);
+				testNode.parent = leaf;
+
+				// now compute confidence score
+
+				double thisScore = testNode.computeNodeConfidenceScore();
+				if (thisScore > bestScore) {
+					bestScore = thisScore;
+					bestBlock = sb;
+				}
+
+				// now detach the node
+				leaf.children.remove(testNode);
+				lookup.remove(testNode.block.id);
+
+				// node gets destroyed by loop scope
+
 			}
-			
-			// now detach the node
-			leaf.children.remove(testNode);
-			lookup.remove(testNode.block.id);
-			
-			// node gets destroyed by loop scope
-			
+
 		}
-				
+
 		return bestBlock;
-		
+
 	}
 
-
-	
-///////////////////////////////////////////////
-//  tree drawing functions
-///////////////////////////////////////////////	
+	// /////////////////////////////////////////////
+	// tree drawing functions
+	// /////////////////////////////////////////////
 
 	private static void traverseDOT(Node n, BufferedWriter out)
 			throws IOException {
@@ -284,14 +305,13 @@ public class BlockTree {
 	// http://en.wikipedia.org/wiki/DOT_%28graph_description_language%29
 
 	private String formatDOTNode(Node nn) {
-		//return nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color
-		//		+ "] [label=\"" + nn.block.signature.name + 
-		//		":" + ((WeightedIdentity) (nn.block.signature)).weight + "\\n"
-		//		+ nn.confidenceScore + "\"];\n";
-		
+		// return nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color
+		// + "] [label=\"" + nn.block.signature.name +
+		// ":" + ((WeightedIdentity) (nn.block.signature)).weight + "\\n"
+		// + nn.confidenceScore + "\"];\n";
+
 		return nn.nodeNum + "[shape=box] [color=" + nn.block.signature.color
-				+ "] [label=\"#" + nn.block.serialNum + 
-				"\\n"
+				+ "] [label=\"#" + nn.block.serialNum + "\\n"
 				+ nn.confidenceScore + "\"];\n";
 	}
 
